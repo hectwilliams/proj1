@@ -7,6 +7,8 @@ import javax.swing.*;
 import javax.swing.border.Border;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -19,15 +21,15 @@ import java.nio.file.Paths;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List; 
+
 
 public class App extends JFrame {
 
-    private JLabel headerLabel1 = null; 
-    private JLabel headerLabel2 = null; 
-    private Button b1 = null; 
-    private Button b2 = null; 
-    private Button b3 = null; 
-    private Button b4 = null; 
+    public JLabel llabel = null; 
+    public Button bbutton = null;
+    public JPanel jjpanel = null; 
+
     Random rand = new Random();
 
     public App() {
@@ -50,6 +52,7 @@ public class App extends JFrame {
         
         /* ERROR ICON */
         JLabel label = this.getImageLabel("img");
+        llabel = label;
         c.gridx = 0;
         c.gridy = 0;
         c.insets = new Insets(
@@ -61,7 +64,6 @@ public class App extends JFrame {
         this.getContentPane().add(label, c);
         this.resetConstraints(c);
 
-
         /* MESSAGES */
         String [] strs = {"Click a button"};
         JPanel containerLabelBar = new JPanel();
@@ -69,9 +71,9 @@ public class App extends JFrame {
         layoutflow.setAlignment(FlowLayout.CENTER);
         containerLabelBar.setLayout(layoutflow);
         for (String s: strs) {
-            label = new JLabel(s);
-            label.setForeground(  Color.DARK_GRAY ); // new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat())
-            containerLabelBar.add(label);
+            JLabel label_ = new JLabel(s);
+            label_.setForeground(  Color.DARK_GRAY ); // new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat())
+            containerLabelBar.add(label_);
         }
         c.gridx = 1;
         c.gridy = 0;
@@ -81,46 +83,91 @@ public class App extends JFrame {
 
 
         /* BUTTONS  */
-        JButton button = null;
+        class JButtonCustom extends JButton {
+            public App app = null;   
+            JButtonCustom(String text, App app) {
+                super(text);
+                this.app = app;
+            }
+        }
 
-        button = new JButton("Rurouni Kenshin");
-        c.gridx = 0;
+        JButtonCustom button = null;
+        List<JButtonCustom> buttons = new ArrayList<>();
+        buttons.add(new JButtonCustom("rk",this));
+        buttons.add(new JButtonCustom("goku", this));
+        buttons.add(new JButtonCustom("jigen", this));
+
+        c.gridx =  0;
         c.gridy =  0;
-        this.getContentPane().add(button, c);
+        this.getContentPane().add(buttons.get(0), c);
 
-        button = new JButton("Goku");
         c.gridx = 1;
         c.gridy =  0;        
-        this.getContentPane().add(button, c);
-        
-        button = new JButton("Jigen");
+        this.getContentPane().add(buttons.get(1), c);
+
         c.gridx = 2;
         c.gridy =  0;        
-        this.getContentPane().add(button, c);
-        
-        /* 
-        PANEL
-         -> FRAME
+        this.getContentPane().add(buttons.get(2), c);
 
-            YOUTUBE API TBD
-         */
+        /* 
+            PANEL
+             -> FRAME
+        */
+        
         JPanel panel = new JPanel(); 
+        jjpanel = panel;
         panel.setVisible(true);
         panel.setBackground(new Color(0xF1C716));
-        panel.setBorder(BorderFactory.createLineBorder(Color.MAGENTA, 5));
+        panel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        
         c.fill = GridBagConstraints.HORIZONTAL;
-        c.ipady = 320;      //make this component tall
+        c.ipady = 360;      //make this component tall
         c.ipadx = 420;      //make this component tall
-
         c.weightx = 0.0;
         c.gridwidth = 3;
         c.gridx = 0;
         c.gridy = 1;
+        
+        ActionListener listener = new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                BufferedImage img = null;
+                Image scaledImage = null; 
+                JButtonCustom currButton = (JButtonCustom) e.getSource() ;
+                String key = currButton.getText();
+                App app = currButton.app;
+                
+                try {
+                    /* inherited button was used to bring App into scope */
+                    img = ImageIO.read(new File( app.getImgURL(key)  )  );
+                    scaledImage = img.getScaledInstance(panel.getWidth(), panel.getHeight(), panel.getHeight())    ;
+                    
+                    panel
+                    .getGraphics()
+                    .drawImage(scaledImage, 0, 0, panel);
+
+                   app.updateLabelIcon(app.llabel, "img2");
+
+
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
+            }
+
+        }; 
+        
+        for (int i = 0; i < buttons.size(); i++) {
+            button = buttons.get(i);
+            button.addActionListener( listener );
+        }
+
+        /* top button click changes the */
         this.getContentPane().add(panel, c);
         this.resetConstraints(c);
 
         /* LAST BUTTON */
-        button = new JButton( "button 5");
+        button = new JButtonCustom( "Reset", this);
         c.fill = GridBagConstraints.HORIZONTAL;
         c.ipady = 0;
         // c.weighty = 0.90; 
@@ -128,14 +175,21 @@ public class App extends JFrame {
         c.insets = new Insets(2, 0, 0, 0);
         c.gridx = 2;
         c.gridy = 2;
-        c.gridwidth = 2;
+        // c.gridwidth = 2;
 
         this.getContentPane().add(button, c);
         this.resetConstraints(c);
 
         this.setVisible(true);
+        button.addActionListener( event -> {
+            JOptionPane.showMessageDialog( new Frame(), "Resetting .. .");
+            this.updateLabelIcon(this.llabel, "img");
+            
+            this.jjpanel.setBackground(null);
+            this.jjpanel.setBackground(new Color(0xFFFFFF));
 
-        /* */
+        });
+
         this.addWindowListener( 
             new WindowAdapter() {
                 @Override
@@ -145,21 +199,19 @@ public class App extends JFrame {
                 }
             }
         );
-
     }
 
-    public String getImgURL () {
+
+// /Users/hectorwilliams/Documents/dev/repos/AlgorithmBook/jx_review/java_fun_child/proj1_submodule/App.java
+    public String getImgURL (String key) {
         String filePath = Paths.get("jx_review", "java_fun_child", "proj1_submodule", "config.json").toAbsolutePath().normalize().toString();
         JSONObject jsonObject = null;
-        String key = "img"; 
         String result = ""; 
 
         try {
             String content = new String(Files.readAllBytes(Paths.get(filePath)));
             jsonObject = new JSONObject(content);
-
             result = jsonObject.getString(key);
-
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -181,7 +233,7 @@ public class App extends JFrame {
         BufferedImage img = null;
 
         try {
-            img = ImageIO.read(new File(this.getImgURL()));
+            img = ImageIO.read(new File(this.getImgURL("img")));
             dimg = img.getScaledInstance(10, 10, Image.SCALE_SMOOTH);
 
         } catch(IOException e) {
@@ -193,7 +245,21 @@ public class App extends JFrame {
         return new JLabel(icon);
     }
 
+    public void updateLabelIcon (JLabel label, String jsonKey) {
+        Image dimg = null;
+        BufferedImage img = null;
 
+        try {
+            img = ImageIO.read(new File(this.getImgURL(jsonKey)));
+            dimg = img.getScaledInstance(10, 10, Image.SCALE_SMOOTH);
+
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+
+        ImageIcon icon = new ImageIcon(dimg) ;
+        label.setIcon(icon);
+    }
     
 
     public static void main (String [] args) {
