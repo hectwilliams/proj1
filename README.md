@@ -15,6 +15,4 @@ Simple App is coded in java and plays a video (video source TBD)
 
 ## Demo
 
-[![Watch demo video](https://imgur.com/UKKIN3Z)](https://youtu.be/4IkW_tXpw5s)
-
-https://imgur.com/UKKIN3Z
+[![Watch demo video](https://i.imgur.com/UKKIN3Z.png) ](https://youtu.be/4IkW_tXpw5s)
