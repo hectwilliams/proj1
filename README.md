@@ -11,8 +11,7 @@ Simple App is coded in java
 - App.java
     > Top level of application
 - config.json 
-    > json file used as a lookup for App file 
-
+    > json file used as a lookup for App file. Generated when root directory when App is run. Deleted when App is exited.
 ## Demo
 
 [![Watch demo video](https://i.imgur.com/UKKIN3Z.png) ](https://youtu.be/4IkW_tXpw5s)
