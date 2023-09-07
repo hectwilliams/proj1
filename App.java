@@ -31,8 +31,12 @@ public class App extends JFrame {
     public JPanel jjpanel = null; 
 
     Random rand = new Random();
-
+    
     public App() {
+        
+        /* create config.json file */
+        new GenerateJson(); 
+        
 
         this.setTitle("Java GridBagLayout");
         this.setSize(20, 20);
