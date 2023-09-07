@@ -29,15 +29,14 @@ public class App extends JFrame {
     public JLabel llabel = null; 
     public Button bbutton = null;
     public JPanel jjpanel = null; 
-
+    private GenerateJson initConfigJson = null;
     Random rand = new Random();
     
     public App() {
         
         /* create config.json file */
-        new GenerateJson(); 
+        initConfigJson = new GenerateJson(); 
         
-
         this.setTitle("Java GridBagLayout");
         this.setSize(20, 20);
 
@@ -97,7 +96,7 @@ public class App extends JFrame {
 
         JButtonCustom button = null;
         List<JButtonCustom> buttons = new ArrayList<>();
-        buttons.add(new JButtonCustom("rk",this));
+        buttons.add(new JButtonCustom("ru",this));
         buttons.add(new JButtonCustom("goku", this));
         buttons.add(new JButtonCustom("jigen", this));
 
@@ -151,7 +150,7 @@ public class App extends JFrame {
                     .getGraphics()
                     .drawImage(scaledImage, 0, 0, panel);
 
-                   app.updateLabelIcon(app.llabel, "img2");
+                   app.updateLabelIcon(app.llabel, "go");
 
 
                 } catch (IOException ioe) {
@@ -187,7 +186,7 @@ public class App extends JFrame {
         this.setVisible(true);
         button.addActionListener( event -> {
             JOptionPane.showMessageDialog( new Frame(), "Resetting .. .");
-            this.updateLabelIcon(this.llabel, "img");
+            this.updateLabelIcon(this.llabel, "warn");
             
             this.jjpanel.setBackground(null);
             this.jjpanel.setBackground(new Color(0xFFFFFF));
@@ -199,6 +198,7 @@ public class App extends JFrame {
                 @Override
                 public void windowClosing(WindowEvent we) {
                     // we.getWindow().dispose();
+                    initConfigJson.tableFileJson.delete();
                     System.exit(0);
                 }
             }
@@ -237,7 +237,7 @@ public class App extends JFrame {
         BufferedImage img = null;
 
         try {
-            img = ImageIO.read(new File(this.getImgURL("img")));
+            img = ImageIO.read(new File(this.getImgURL("warn")));
             dimg = img.getScaledInstance(10, 10, Image.SCALE_SMOOTH);
 
         } catch(IOException e) {
